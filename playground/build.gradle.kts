@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation("com.github.jarvvski.bus:core")
+    implementation("com.github.jarvvski.bus:kettle-core")
     implementation(libs.logger)
     implementation(libs.coroutines)
 

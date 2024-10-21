@@ -6,7 +6,6 @@ build
 
 # Ignore VCS
 .jj/
-git/
 
 # Idea files
 .idea/
