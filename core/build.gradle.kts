@@ -10,7 +10,7 @@ dependencies {
     implementation(kotlin("reflect"))
     implementation(libs.coroutines)
     implementation(libs.guava)
-    implementation("com.github.jarvvski.bus:extensions")
+    implementation("com.github.jarvvski.bus:local-kt-ext")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation(libs.junit.jupiter.engine)
