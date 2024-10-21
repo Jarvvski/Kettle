@@ -8,7 +8,7 @@ plugins {
 
 rootProject.name = "playground"
 
-includeBuild("../core")
+includeBuild("../kettle-core")
 
 dependencyResolutionManagement {
     versionCatalogs {

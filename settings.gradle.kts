@@ -11,5 +11,5 @@ rootProject.name = "event-bus"
 includeBuild("local-kt-ext")
 includeBuild("playground")
 
-includeBuild("core")
+includeBuild("kettle-core")
 

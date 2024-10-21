@@ -6,7 +6,7 @@ plugins {
     // none yet
 }
 
-rootProject.name = "core"
+rootProject.name = "kettle-core"
 
 includeBuild("../local-kt-ext")
 
