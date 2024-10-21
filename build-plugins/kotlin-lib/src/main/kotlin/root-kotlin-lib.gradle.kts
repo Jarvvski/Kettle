@@ -9,6 +9,9 @@ plugins {
     id("com.autonomousapps.dependency-analysis")
 }
 
+internal val Project.libs: VersionCatalog get() =
+    project.extensions.getByType<VersionCatalogsExtension>().named("libs")
+
 dependencyAnalysis {
     issues {
         all {
@@ -44,7 +47,6 @@ allprojects {
     }
 
     tasks {
-
         withType<KotlinCompile>().all {
             compilerOptions {
                 freeCompilerArgs.addAll(
@@ -54,6 +56,18 @@ allprojects {
                 jvmTarget.set(JvmTarget.JVM_21)
             }
         }
+    }
+
+    dependencies {
+        implementation("com.github.jarvvski.bus:local-kt-ext")
+
+        implementation(libs.findLibrary("logger").get())
+        implementation(libs.findLibrary("coroutines").get())
+        implementation(libs.findLibrary("guava").get())
+
+        testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+        testImplementation(libs.findLibrary("junit.jupiter.engine").get())
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     }
 
 

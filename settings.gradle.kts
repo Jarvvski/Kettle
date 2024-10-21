@@ -12,4 +12,4 @@ includeBuild("local-kt-ext")
 includeBuild("playground")
 
 includeBuild("kettle-core")
-
+includeBuild("kettle-db")
