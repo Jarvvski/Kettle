@@ -1,6 +1,9 @@
 package com.github.jarvvski.bus
 
 import com.google.common.collect.ArrayListMultimap
+import dev.forkhandles.result4k.flatMap
+import dev.forkhandles.result4k.map
+import dev.forkhandles.result4k.orThrow
 import dev.forkhandles.result4k.resultFrom
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
@@ -21,42 +24,18 @@ private val logger = KotlinLogging.logger {}
 
 class LocalBroker(
     subscribers: List<MessageSubscriber<*>>
-) {
+) : Broker {
     // really rough impl, need better datastore
     private val messages: Queue<Pair<UUID, Any>> = LinkedList()
-    private val storedSubscribers = ArrayListMultimap.create<String, MessageSubscriber<*>>()
     val publisher = LocalPublisher(messages)
 
     private val supervisor = SupervisorJob()
+    private val resolver = SubscriptionResolver(subscribers)
     private val scope = CoroutineScope(supervisor)
 
     private var job: Job? = null
 
-    init {
-        // resolve subscribers to map of eventType to subscriber
-        // so that we can easily route events to the given subscribers in the
-        // #run function
-        subscribers.forEach {
-            logger.info {
-                "Resolving subscriber[${it::class.simpleName}]"
-            }
-
-            // yes, I know !! is bad :)
-            val type = it::class.allSupertypes.first {
-                it.classifier == MessageSubscriber::class
-            }.arguments[0].type !!
-            val simpleName = type.classifier?.let { (it as? KClass<*>)?.simpleName }
-
-            logger.info {
-                "Found message type[${type}] on subscriber[${it::class.simpleName}]"
-            }
-
-            storedSubscribers.put(simpleName, it)
-        }
-
-    }
-
-    fun start() {
+    override fun start() {
         job = scope.launch {
             while (true) {
                 work()
@@ -69,22 +48,24 @@ class LocalBroker(
         // need a better way to poll map routinely for changes
         while (messages.isNotEmpty()) {
             val message = messages.poll()
-            val payload = message.second
-            storedSubscribers.get(payload::class.simpleName !!).forEach {
-                @Suppress("UNCHECKED_CAST") val typedSubscriber = it as? MessageSubscriber<Any>
-                logger.info {
-                    "invoking subscriber[${it.javaClass.simpleName}] for payload[${payload::class.simpleName}]"
+            val payload: Any = message.second
+            resolver.getSubscribers(payload::class).orThrow()
+                .forEach {
+                    logger.info {
+                        "invoking subscriber[${it.javaClass.simpleName}] " +
+                                "for payload[${payload::class.simpleName}]"
+                    }
+                    it.consume(payload)
                 }
-                // Yesssss, I knowwwww
-                typedSubscriber !!.consume(payload)
-            }
-            logger.info {
-                "removing message from queue"
-            }
+        }
+
+        logger.info {
+            "removing message from queue"
         }
     }
 
-    fun stop() {
+
+    override fun stop() {
         job?.cancel()
     }
 }
