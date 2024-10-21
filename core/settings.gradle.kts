@@ -8,7 +8,7 @@ plugins {
 
 rootProject.name = "core"
 
-includeBuild("../extensions")
+includeBuild("../local-kt-ext")
 
 dependencyResolutionManagement {
     versionCatalogs {

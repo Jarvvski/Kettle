@@ -6,7 +6,7 @@ plugins {
     // none yet
 }
 
-rootProject.name = "extensions"
+rootProject.name = "local-kt-ext"
 
 dependencyResolutionManagement {
     versionCatalogs {

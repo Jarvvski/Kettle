@@ -8,7 +8,7 @@ plugins {
 
 rootProject.name = "event-bus"
 
-includeBuild("extensions")
+includeBuild("local-kt-ext")
 includeBuild("playground")
 
 includeBuild("core")
